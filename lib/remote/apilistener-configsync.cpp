@@ -342,8 +342,14 @@ void ApiListener::UpdateConfigObject(const ConfigObject::Ptr& object, const Mess
 
 	if (client)
 		JsonRpc::SendMessage(client->GetStream(), message);
-	else
-		RelayMessage(origin, object, message, false);
+	else {
+		Zone::Ptr target = static_pointer_cast<Zone>(object->GetZone());
+
+		if (!target)
+			target = Zone::GetLocalZone();
+
+		RelayMessage(origin, target, message, false);
+	}
 }
 
 
