@@ -16,7 +16,7 @@ Icinga 2 is providing its own SELinux Policy. At the moment it is not upstreamed
 
 There are two ways to install the SELinux Policy for Icinga 2 on Enterprise Linux 7. Installing it from the provided package which is the preferred option and manual installation if you need some fixes not released yet or for development.
 
-The policy package will run the daemon in a permissive domain so nothing will be denied also if the system runs in enforcing mode, so please make sure to run the system in this mode.
+If the system runs in enforcing mode, you can still set icinga2 to run its domain permissve if problems occure, so please make sure to run the system in this mode.
 
     # sestatus
     SELinux status:                 enabled
@@ -108,7 +108,21 @@ SELinux is based on the least level of access required for a service to run. Usi
 
 Having this boolean enabled allows icinga2 to connect to all ports. This can be neccesary if you use features which connect to unconfined services.
 
+**httpd_can_write_icinga2_command** 
+
+Having this boolean enabled allows httpd to write to the command pipe of icinga2. This is enabled by default, if not needed you can disable it for more security.
+
+**httpd_can_connect_icinga2_api** 
+
+Having this boolean enabled allows httpd to connect to the API of icinga2 (Ports labeled icinga2_port_t). This is enabled by default, if not needed you can disable it for more security.
+
 ### <a id="selinux-policy-examples"></a> Configuration Examples
+
+#### <a id="selinux-policy-examples-permissive"></a> Run the icinga2 service permissive
+
+If problems occure while running the system in enforcing mode and those problems are only caused by the policy of the icinga2 domain, you can set this domain to permissive instead of the complete system. This can be done by executing `semanage permissive -a icinga2_t`.
+
+Make sure to report the bugs in the policy afterwards.
 
 #### <a id="selinux-policy-examples-plugin"></a> Confining a plugin
 
@@ -217,7 +231,7 @@ Now try the commands again without providing the role and type and they will wor
 
 If you experience any problems while running in enforcing mode try to reproduce it in permissive mode. If the problem persists it is not related to SELinux because in permissive mode SELinux will not deny anything.
 
-For now Icinga 2 is running in a permissive domain and adds also some rules for other necessary services so no problems should occure at all. But you can help to enhance the policy by testing Icinga 2 running confined by SELinux.
+After some feedback Icinga 2 is now running in a enforced domain, but still adds also some rules for other necessary services so no problems should occure at all. But you can help to enhance the policy by testing Icinga 2 running confined by SELinux.
 
 When filing a bug report please add the following information additionally to the [normal ones](https://www.icinga.org/icinga/faq/):
 * Output of `semodule -l | grep -e icinga2 -e nagios -e apache`
