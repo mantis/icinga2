@@ -2225,6 +2225,7 @@ Name                    	          | Description
 icingacli_businessprocess_process         | **Required.** Business process to monitor.
 icingacli_businessprocess_config          | **Optional.** Configuration file containing your business process without file extension.
 icingacli_businessprocess_details         | **Optional.** Get details for root cause analyses. Defaults to false.
+icingacli_businessprocess_statetype       | **Optional.** Define which state type to look at. Could be either soft or hard, overrides an eventually configured default.
 
 
 ### <a id="plugin-contrib-ipmi"></a> IPMI Devices
