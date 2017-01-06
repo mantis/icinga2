@@ -250,14 +250,14 @@ static void ProcessHandler(void)
 	}
 
 	for (;;) {
-		SizeType length;
+		size_t length;
 
 		struct msghdr msg;
 		memset(&msg, 0, sizeof(msg));
 
 		struct iovec io;
 		io.iov_base = &length;
-		io.iov_len = sizeof(SizeType);
+		io.iov_len = sizeof(size_t);
 
 		msg.msg_iov = &io;
 		msg.msg_iovlen = 1;
@@ -283,7 +283,7 @@ static void ProcessHandler(void)
 
 		char *mbuf = new char[length];
 
-		SizeType count = 0;
+		size_t count = 0;
 		while (count < length) {
 			rc = recv(l_ProcessControlFD, mbuf + count, length - count, 0);
 
@@ -383,7 +383,7 @@ static pid_t ProcessSpawn(const std::vector<String>& arguments, const Dictionary
 	request->Set("extraEnvironment", extraEnvironment);
 
 	String jrequest = JsonEncode(request);
-	SizeType length = jrequest.GetLength();
+	size_t length = jrequest.GetLength();
 
 	boost::mutex::scoped_lock lock(l_ProcessControlMutex);
 
@@ -392,7 +392,7 @@ static pid_t ProcessSpawn(const std::vector<String>& arguments, const Dictionary
 
 	struct iovec io;
 	io.iov_base = &length;
-	io.iov_len = sizeof(SizeType);
+	io.iov_len = sizeof(size_t);
 
 	msg.msg_iov = &io;
 	msg.msg_iovlen = 1;
@@ -440,11 +440,11 @@ static int ProcessKill(pid_t pid, int signum)
 	request->Set("signum", signum);
 
 	String jrequest = JsonEncode(request);
-	SizeType length = jrequest.GetLength();
+	size_t length = jrequest.GetLength();
 
 	boost::mutex::scoped_lock lock(l_ProcessControlMutex);
 
-	while (send(l_ProcessControlFD, &length, sizeof(SizeType), 0) < 0)
+	while (send(l_ProcessControlFD, &length, sizeof(size_t), 0) < 0)
 		StartSpawnProcessHelper();
 
 	if (send(l_ProcessControlFD, jrequest.CStr(), jrequest.GetLength(), 0) < 0) {
@@ -473,11 +473,11 @@ static int ProcessWaitPID(pid_t pid, int *status)
 	request->Set("pid", pid);
 
 	String jrequest = JsonEncode(request);
-	SizeType length = jrequest.GetLength();
+	size_t length = jrequest.GetLength();
 
 	boost::mutex::scoped_lock lock(l_ProcessControlMutex);
 
-	while (send(l_ProcessControlFD, &length, sizeof(SizeType), 0) < 0)
+	while (send(l_ProcessControlFD, &length, sizeof(size_t), 0) < 0)
 		StartSpawnProcessHelper();
 
 	if (send(l_ProcessControlFD, jrequest.CStr(), jrequest.GetLength(), 0) < 0) {
